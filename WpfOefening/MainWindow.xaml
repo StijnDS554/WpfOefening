@@ -8,34 +8,76 @@
         Title="MainWindow" Height="550" Width="750">
     <Window.CommandBindings>
         <CommandBinding Command="New" Executed="NewExecuted"></CommandBinding>
-        <CommandBinding Command="Open" Executed="OpenExecuted"></CommandBinding> 
+        <CommandBinding Command="Open" Executed="OpenExecuted"></CommandBinding>
+        <CommandBinding Command="Save" Executed="SaveExecuted"></CommandBinding>
+        <CommandBinding Command="Close" Executed="CloseExecuted"></CommandBinding>
+        <CommandBinding Command="Print" Executed="PrintExecuted"></CommandBinding>
     </Window.CommandBindings>
     <DockPanel>
         <Menu Name="MenuBalk" Height="24" DockPanel.Dock="Top">
-            <MenuItem Header="Bestand">
+            <MenuItem Header="Bestand" IsCheckable="False">
                 <MenuItem Name="Nieuw" Header="Nieuw" Command="New"></MenuItem>
                 <MenuItem Name="Openen" Header="Openen" Command="Open"></MenuItem>
-                <MenuItem Name="Opslaan" Header="Opslaan" Command="Save"></MenuItem>
-                <MenuItem Name="Printen" Header="Afdrukvoorbeeld" Command="Print"></MenuItem>
+                <MenuItem Name="Opslaan" Header="Opslaan" Command="Save" IsEnabled="False"></MenuItem>
+                <MenuItem Name="Printen" Header="Afdrukvoorbeeld" Command="Print" IsEnabled="False"></MenuItem>
+                <MenuItem Name="Afsluiten" Header="Afsluiten" Command="Close"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Kaarten">
-                <MenuItem Header="Kerstkaart"></MenuItem>
-                <MenuItem Header="Geboortekaart"></MenuItem>
+            <MenuItem Name="kaarten" Header="Kaarten" IsEnabled="False">
+                <MenuItem Name="Kerstkaart" Header="Kerstkaart" Click="Kerstkaart_Click"></MenuItem>
+                <MenuItem Name="Geboortekaart" Header="Geboortekaart" Click="Geboortekaart_Click"></MenuItem>
             </MenuItem>
         </Menu>
         <StatusBar Name="status" Height="24" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" >
             <StatusBarItem Name="statusLinks"></StatusBarItem>
         </StatusBar>
+        
         <StackPanel Orientation="Horizontal">
-        <Canvas Name="canvas" Height="400" Width="500" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <DockPanel>
+            <Canvas Name="canvas" Height="400" Width="500" DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" AllowDrop="False" DragEnter="canvas_DragEnter" Drop="canvas_Drop">
                 <Canvas.Background>
                     <ImageBrush x:Name="Achtergrond"/>
                 </Canvas.Background>
             </Canvas>
-            <DockPanel>
-                <ComboBox DockPanel.Dock="Top">
-                    
+                <TextBox Name="KaartText"></TextBox>
+            </DockPanel>
+            <DockPanel Width="250" LastChildFill="True">
+                <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Kleur van de bal:</TextBlock>
+                <ComboBox Name="combobox" SelectionChanged="combobox_SelectionChanged" Width="150" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Ellipse Fill="{Binding Name}" Width="16" Height="16" Margin="0,2,5,2" Stroke="Black" StrokeThickness="2" />
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
+                <Ellipse Name="bal" Margin="10" DockPanel.Dock="Top" MouseMove="bal_MouseMove">
+                </Ellipse>
+                <Canvas Name="Vuilbak" DockPanel.Dock="Top" Margin="80" VerticalAlignment="Center" Width="70" Height="120" AllowDrop="True" Drop="Vuilbak_Drop">
+                    <Canvas.Background>
+                        <ImageBrush x:Name="Achtergrond2"/>
+                    </Canvas.Background>
+                </Canvas>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Bottom" Height="60">
+                    <TextBlock VerticalAlignment="Center" Margin="10">Grootte:</TextBlock>
+                    <TextBlock Name="fontSizeIndicator" VerticalAlignment="Center"></TextBlock>
+                    <DockPanel>
+                        <Button Name="plus" Width="20" Margin="5" DockPanel.Dock="Top" Click="plus_Click">+</Button>
+                        <Button Name="minus" Width="20" Margin="5" DockPanel.Dock="Top" Click="minus_Click">-</Button>
+                    </DockPanel>
+                    
+                </StackPanel>
+                <ComboBox  DockPanel.Dock="Bottom" SelectionChanged="Lettertype_SelectionChanged" Name="Lettertype" HorizontalAlignment="Center" Width="150" ItemsSource=
+"{Binding Source={x:Static Member=Fonts.SystemFontFamilies}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock FontFamily="{Binding}" Text="{Binding}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom">Lettertype:</TextBlock>
+
             </DockPanel>
         </StackPanel>
     </DockPanel>
