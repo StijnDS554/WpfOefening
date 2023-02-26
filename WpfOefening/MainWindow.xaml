@@ -38,7 +38,7 @@
                     <ImageBrush x:Name="Achtergrond"/>
                 </Canvas.Background>
             </Canvas>
-                <TextBox Name="KaartText"></TextBox>
+                <TextBox Name="KaartText" HorizontalAlignment="Center" MinWidth="40" MaxWidth="500" MaxLines="1"></TextBox>
             </DockPanel>
             <DockPanel Width="250" LastChildFill="True">
                 <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">Kleur van de bal:</TextBlock>

@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -53,27 +56,132 @@ namespace WpfOefening
             { Achtergrond.ImageSource = new BitmapImage(new Uri(@"components/Images/kerstkaart.jpg", UriKind.Relative)); }
             else
             {
-            Achtergrond.ImageSource = new BitmapImage(new Uri(@"components/Images/geboortekaart.jpg", UriKind.Relative));
-            Geboortekaart.IsChecked = true;
+                Achtergrond.ImageSource = new BitmapImage(new Uri(@"components/Images/geboortekaart.jpg", UriKind.Relative));
+                Geboortekaart.IsChecked = true;
             }
             Achtergrond2.ImageSource = new BitmapImage(new Uri(@"components/Images/vuilnisbak.png", UriKind.Relative));
             statusLinks.Content = "Nieuw";
-            
+
             Opslaan.IsEnabled = true;
             Printen.IsEnabled = true;
             kaarten.IsEnabled = true;
         }
         private void OpenExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                canvas.Children.Clear();
+                canvas.AllowDrop = true;
+                Opslaan.IsEnabled = true;
+                Printen.IsEnabled = true;
+                kaarten.IsEnabled = true;
+                OpenFileDialog dlg = new OpenFileDialog();
+                dlg.FileName = "Kaart";
+                dlg.DefaultExt = ".kaart";
+                dlg.Filter = "Kaartjes |*.kaart";
+                if (dlg.ShowDialog() == true)
+                {
+                    using (StreamReader bestand = new StreamReader(dlg.FileName))
+                    {
+                        string loadedAchtergrond = bestand.ReadLine();
+                        var achtergrondinfo = loadedAchtergrond.Split(' ');
+                        statusLinks.Content = dlg.SafeFileName.Split(".")[0] + " " + dlg.FileName;
+                        Achtergrond.ImageSource = new BitmapImage(new Uri(@achtergrondinfo[0], UriKind.Relative));
+                        if (achtergrondinfo[1] == "Geboortekaart")
+                        {
+                            Geboortekaart.IsChecked = true;
+                        }
+                        else
+                        {
+                            Kerstkaart.IsChecked = true;
+                        }
+                        int aantalBallen = Convert.ToInt32((string)bestand.ReadLine());
+                        for (int i = 0; i < aantalBallen; i++)
+                        {
+                            string bal = bestand.ReadLine();
+                            var balSettings = bal.Split(' ');
+                            string color = balSettings[0];
+                            double x = Convert.ToDouble(balSettings[1]);
+                            double y = Convert.ToDouble(balSettings[2]);
+                            Ellipse ellipse = new Ellipse();
+                            ellipse.Style = this.bal.Style;
+
+                            ellipse.Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(color);
+                            Canvas.SetLeft(ellipse, x);
+                            Canvas.SetTop(ellipse, y);
+                            ellipse.MouseMove += bal_MouseMove;
+                            canvas.Children.Add(ellipse);
+                        }
+                        KaartText.Text = bestand.ReadLine();
+                        var fonts = Fonts.SystemFontFamilies;
+                        var currentfont = bestand.ReadLine();
+                        foreach (var font in fonts)
+                        {
+                            if (font.Source == currentfont)
+                            {
+                                KaartText.FontFamily = font;
+                                Lettertype.SelectedItem = font;
+                            }
+                        }
+                        if (!bestand.EndOfStream)
+                        KaartText.FontSize = Convert.ToDouble(bestand.ReadLine());
+                        fontSizeIndicator.Text = KaartText.FontSize.ToString();
+                        fontSizeIndicator.FontSize = KaartText.FontSize;
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("openen mislukt : " + ex.Message);
+            }
         }
         private void SaveExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.FileName = "Kaart";
+                dlg.DefaultExt = ".kaart";
+                dlg.Filter = "Textbox documents |*.kaart";
+                if (dlg.ShowDialog() == true)
+                {
+                    using (StreamWriter bestand = new StreamWriter(dlg.FileName))
+                    {
+                        if (Kerstkaart.IsChecked)
+                        {
+                            bestand.WriteLine(Achtergrond.ImageSource.ToString() + " " + Kerstkaart.Name);
+                        }
+                        else
+                        {
+                            bestand.WriteLine(Achtergrond.ImageSource.ToString() + " " + Geboortekaart.Name);
+                        }
+                        bestand.WriteLine(canvas.Children.Count);
+                        if (canvas.Children.Count > 0)
+                        {
+                            foreach (Ellipse item in canvas.Children)
+                            {
+                                double x = Canvas.GetLeft(item);
+                                double y = Canvas.GetTop(item);
+                                bestand.WriteLine(item.Fill + " " + x + " " + y);
+                            }
+                        }
+                        bestand.WriteLine(KaartText.Text);
+                        bestand.WriteLine(KaartText.FontFamily.Source);
+                        bestand.WriteLine(fontSizeIndicator.Text);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("opslaan mislukt : " + ex.Message);
+            }
         }
         private void CloseExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            this.Close();
+            var result = MessageBox.Show("wilt u afsluiten?", "Afsluiten", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+                this.Close();
         }
         private void PrintExecuted(object sender, ExecutedRoutedEventArgs e)
         {
@@ -147,6 +255,7 @@ namespace WpfOefening
 
         private void plus_Click(object sender, RoutedEventArgs e)
         {
+            fontSize = (int)KaartText.FontSize;
             if (fontSize < 40)
             {
                 fontSize += 1;
@@ -158,6 +267,7 @@ namespace WpfOefening
 
         private void minus_Click(object sender, RoutedEventArgs e)
         {
+            fontSize = (int)KaartText.FontSize;
             if (fontSize > 10)
             {
                 fontSize += -1;
