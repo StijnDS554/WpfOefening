@@ -35,16 +35,8 @@ namespace WpfOefening
             combobox.ItemsSource = typeof(Colors).GetProperties();
             combobox.SelectedIndex = 0;
             Achtergrond2.ImageSource = new BitmapImage(new Uri(@"components/Images/vuilnisbak.png", UriKind.Relative));
-            style = new balStyle();
-            style.width = 40;
-            style.height = 40;
-            style.outline = 5;
-            style.color = (Color)(combobox.SelectedItem as PropertyInfo).GetValue(null, null);
-            bal.Height = style.height;
-            bal.Width = style.width;
-            bal.StrokeThickness = style.outline;
-            bal.Stroke = Brushes.Black;
-            bal.Fill = new SolidColorBrush(style.color);
+            selectedColor = (Color)(combobox.SelectedItem as PropertyInfo).GetValue(null, null);
+            bal.Fill = new SolidColorBrush(selectedColor);
             this.ResizeMode = ResizeMode.CanMinimize;
             Lettertype.SelectedIndex = 0;
             KaartText.FontFamily = Lettertype.SelectedItem as FontFamily;
@@ -67,7 +59,6 @@ namespace WpfOefening
             Achtergrond2.ImageSource = new BitmapImage(new Uri(@"components/Images/vuilnisbak.png", UriKind.Relative));
             statusLinks.Content = "Nieuw";
             
-            statusLinks.Content = style.color;
             Opslaan.IsEnabled = true;
             Printen.IsEnabled = true;
             kaarten.IsEnabled = true;

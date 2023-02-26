@@ -52,7 +52,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Ellipse Name="bal" Margin="10" DockPanel.Dock="Top" MouseMove="bal_MouseMove">
+                <Ellipse Name="bal" Margin="10" DockPanel.Dock="Top" MouseMove="bal_MouseMove" Style="{StaticResource bal}">
                 </Ellipse>
                 <Canvas Name="Vuilbak" DockPanel.Dock="Top" Margin="80" VerticalAlignment="Center" Width="70" Height="120" AllowDrop="True" Drop="Vuilbak_Drop">
                     <Canvas.Background>
@@ -63,8 +63,8 @@
                     <TextBlock VerticalAlignment="Center" Margin="10">Grootte:</TextBlock>
                     <TextBlock Name="fontSizeIndicator" VerticalAlignment="Center"></TextBlock>
                     <DockPanel>
-                        <Button Name="plus" Width="20" Margin="5" DockPanel.Dock="Top" Click="plus_Click">+</Button>
-                        <Button Name="minus" Width="20" Margin="5" DockPanel.Dock="Top" Click="minus_Click">-</Button>
+                        <RepeatButton Name="plus" Width="20" Margin="5" DockPanel.Dock="Top" Click="plus_Click">+</RepeatButton>
+                        <RepeatButton Name="minus" Width="20" Margin="5" DockPanel.Dock="Top" Click="minus_Click">-</RepeatButton>
                     </DockPanel>
                     
                 </StackPanel>
