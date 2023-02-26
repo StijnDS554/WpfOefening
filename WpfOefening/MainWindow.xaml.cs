@@ -17,7 +17,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WpfOefening.components;
 
 namespace WpfOefening
 {
@@ -27,7 +26,6 @@ namespace WpfOefening
     public partial class MainWindow : Window
     {
         private Color selectedColor;
-        private readonly balStyle style;
         private Ellipse draggedBal;
         private Point startDragPoint;
         private int fontSize = 30;
@@ -63,7 +61,7 @@ namespace WpfOefening
             statusLinks.Content = "Nieuw";
 
             Opslaan.IsEnabled = true;
-            Printen.IsEnabled = true;
+            Printen.IsEnabled = false;
             kaarten.IsEnabled = true;
         }
         private void OpenExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -73,7 +71,7 @@ namespace WpfOefening
                 canvas.Children.Clear();
                 canvas.AllowDrop = true;
                 Opslaan.IsEnabled = true;
-                Printen.IsEnabled = true;
+                Printen.IsEnabled = false;
                 kaarten.IsEnabled = true;
                 OpenFileDialog dlg = new OpenFileDialog();
                 dlg.FileName = "Kaart";
